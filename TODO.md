@@ -7,7 +7,7 @@
 - [ ] Cancel button for a running resize job
 
 ### UI
-- [ ] Remove individual images from the list (small ✕ per card) before resizing
+- [x] Remove individual images from the list (small ✕ per card) before resizing
 - [ ] Thumbnails in the image list
 - [ ] Show total size saved after a finished job (before → after)
 - [ ] Empty-state hint when the list is cleared

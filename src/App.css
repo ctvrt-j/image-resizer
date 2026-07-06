@@ -344,4 +344,7 @@ button:disabled {
   color: var(--color-text-muted);
   white-space: nowrap;
   flex-shrink: 0;
+  gap: 6px;
+  display: flex;
+  align-items: center;
 }

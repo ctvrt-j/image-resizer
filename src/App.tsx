@@ -198,6 +198,11 @@ function App() {
     }
   }
 
+  async function removeImage(image: ImageInfo) {
+    const filteredImages = images.filter((im) => im !== image)
+    setImages(filteredImages)
+  }
+
   const sizeValid = parseInt(width, 10) > 0 && parseInt(height, 10) > 0;
 
   function handleReset() {
@@ -313,6 +318,13 @@ function App() {
                 </span>
                 <span className="image-item__meta">
                   {img.format} &middot; {img.width}&times;{img.height} &middot; {formatBytes(img.size)}
+                  <button
+                    className="reset-button"
+                    title="Remove Image"
+                    onClick={() => removeImage(img)}
+                  >
+                    ✕
+                  </button>
                 </span>
               </li>
             ))}
