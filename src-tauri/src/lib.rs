@@ -216,14 +216,13 @@ fn backup_original(path: &Path) -> Result<PathBuf, String> {
         .map_err(|e| format!("Failed to create original folder: {}", e))?;
 
     let backup = original_dir.join(name);
-    if backup.exists() {
-        return Err(format!(
-            "{} already exists in the original folder — refusing to overwrite a backup",
-            backup.display()
-        ));
+    // A backup from a previous run holds the true original — reuse it as the
+    // resize source instead of overwriting it with an already-resized file
+    if !backup.exists() {
+        std::fs::rename(path, &backup).map_err(|e| {
+            format!("Failed to move {} to original folder: {}", path.display(), e)
+        })?;
     }
-    std::fs::rename(path, &backup)
-        .map_err(|e| format!("Failed to move {} to original folder: {}", path.display(), e))?;
 
     Ok(backup)
 }
@@ -299,9 +298,16 @@ mod tests {
         assert_eq!(image::image_dimensions(&path).unwrap(), (50, 25));
         assert_eq!(image::image_dimensions(&backup).unwrap(), (100, 50));
 
-        // A second backup of the same name must refuse to overwrite the first
-        assert!(backup_original(&path).is_err());
-        assert!(backup.exists());
+        // Re-resizing reuses the existing backup as the source instead of
+        // overwriting it with the already-resized file
+        let second = backup_original(&path).unwrap();
+        assert_eq!(second, backup);
+        assert_eq!(image::image_dimensions(&backup).unwrap(), (100, 50));
+        assert_eq!(image::image_dimensions(&path).unwrap(), (50, 25));
+
+        resize_from_backup(&second, &path, 20, 10).unwrap();
+        assert_eq!(image::image_dimensions(&path).unwrap(), (20, 10));
+        assert_eq!(image::image_dimensions(&backup).unwrap(), (100, 50));
 
         std::fs::remove_dir_all(&dir).unwrap();
     }

@@ -322,6 +322,7 @@ function App() {
                     className="reset-button"
                     title="Remove Image"
                     onClick={() => removeImage(img)}
+                    disabled={resizing}
                   >
                     ✕
                   </button>
